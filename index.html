@@ -18,8 +18,14 @@
 
 	// Called when we get a line of data - updates the light color
 	function onLine(v) {
-		console.log("Received: "+JSON.stringify(v));
-		comment.innerHTML = JSON.stringify(v);
+		// console.log("Received: "+JSON.stringify(v));
+		console.log("Received: " + v);
+		comment.innerHTML = v;
+		if (v === 'start') {
+			start();
+        } else if (v === 'stop') {
+			stop();
+        }
 	}
 
     function connect() {
@@ -58,11 +64,13 @@
 						pinMode(D29, 'input_pullup');
 						setWatch(function(e) {
 						    LED1.set();
-						    console.log('D28 pressed');
+						    Bluetooth.println('start');
+						    // console.log('D28 pressed');
 						}, D28, { repeat: true, edge: 'falling', debounce: 50 });
 						setWatch(function(e) {
 						    LED1.reset();
-						    console.log('D29 pressed');
+						    Bluetooth.println('stop');						    
+						    // console.log('D29 pressed');
 						}, D29, { repeat: true, edge: 'falling', debounce: 50 });
 						NRF.on('disconnect', function() {reset()});`;
 					connection.write(code, function() { console.log("Ready..."); });
