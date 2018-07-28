@@ -21,9 +21,9 @@
 		// console.log("Received: "+JSON.stringify(v));
 		console.log("Received: " + v);
 		comment.innerHTML = v;
-		if (v === 'start') {
+		if (v.indexOf('start') !== -1) {
 			start();
-        } else if (v === 'stop') {
+        } else if (v.indexOf('stop') !== -1) {
 			stop();
         }
 	}
