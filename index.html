@@ -2,24 +2,51 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">    
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <script src="https://www.puck-js.com/puck.js"></script>
-    <title>Hot Wire v0.1.1</title>
+    <title>Hot Wire v0.1.3</title>
+    <style>
+        #clock {
+            font-size: 16vw;
+            text-align: center;
+            font-family: "Courier New", Courier, monospace;
+            width: 100%;
+        }
+        #menu {
+            width: 100%;
+            height: 2cm;
+        }
+        #comment {
+            width: 100%;
+            height: 2cm;
+            font-size: 16vw;
+            text-align: center;
+            font-family: "Arial", sans-serif;
+        }
+        .button {
+            width: 24%;
+            height: 100%;
+            font-size: 5vw;
+        }
+    </style>
 </head>
 <body>
-<input type="button" id="connect" value="connect" onclick="connect()">
-<input type="button" id="start" value="start" onclick="start()">
-<input type="button" id="wire" value="wire" onclick="wire()">
-<input type="button" id="stop" value="stop" onclick="stop()">
+<div id="menu">
+    <input class="button" type="button" id="connect" value="connect" onclick="connect()">
+    <input class="button" type="button" id="start" value="start" onclick="start()">
+    <input class="button" type="button" id="wire" value="wire" onclick="wire()">
+    <input class="button" type="button" id="stop" value="stop" onclick="stop()">
+</div>
 <div id="clock"></div>
 <div id="comment"></div>
+<div id="debug"></div>
 
 <script type="text/javascript">
     let connection;
 	// Called when we get a line of data
 	function onLine(v) {
 		console.log("Received: " + v);
-		comment.innerHTML = v;
+		debug.innerHTML = v;
 		if (v.indexOf('start') !== -1) {
 			start();
         } else if (v.indexOf('stop') !== -1) {
@@ -82,7 +109,7 @@
 						NRF.on('disconnect', function() {reset()});`;
 					connection.write(code, function() {
 						console.log('Ready...');
-						comment.innerHTML = 'Ready...';
+						debug.innerHTML = 'Ready...';
 					});
 				}, 1500);
 			});
@@ -94,6 +121,7 @@
 	let failed = false;
     let clock = document.getElementById('clock');
     let comment = document.getElementById('comment');
+    let debug = document.getElementById('debug');
 	setClock(duration);
     function start () {
     	console.log("start");
