@@ -1,1 +1,81 @@
-<h1>HotWire</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hot Wire</title>
+</head>
+<body>
+<input type="button" id="start" value="start" onclick="start()">
+<input type="button" id="wire" value="wire" onclick="wire()">
+<input type="button" id="stop" value="stop" onclick="stop()">
+<div id="clock"></div>
+<div id="comment"></div>
+
+<script type="text/javascript">
+    let startTime, timer;
+    let duration = 0;
+	let started = false;
+	let failed = false;
+    let clock = document.getElementById('clock');
+    let comment = document.getElementById('comment');
+	setClock(duration);
+    function start () {
+    	console.log("start");
+		startTime = (new Date()).getTime();
+		clearInterval(timer);
+    	timer = setInterval(tick, 100);
+    	duration = 0;
+		setClock(duration);
+    	started = true;
+		failed = false
+		comment.innerHTML = '';
+    }
+    function wire () {
+		if (started) {
+			console.log("wire");
+			stop();
+			failed = true;
+			comment.innerHTML = "Verloren!";
+		}
+    }
+    function stop () {
+    	if (started) {
+			console.log("stop");
+			duration = (new Date()).getTime() - startTime;
+			setClock(duration);
+			started = false;
+			clearInterval(timer);
+			if (!failed) {
+				comment.innerHTML = "Gewonnen!";
+			}
+		}
+    }
+    function tick () {
+        if (started && !failed) {
+        	duration = (new Date()).getTime() - startTime;
+			setClock(duration);
+        }
+    }
+    function leadingZero(value, digits) {
+    	let delta = digits - (value + '').length
+    	if (delta > 0) {
+    		let output = ''
+    		for (let i = 0; i < delta; i++) {
+				output += '0';
+            }
+			output += value;
+    		return output;
+        } else {
+    		return value + ''
+        }
+    }
+    function setClock (d) {
+		// clock.innerHTML = '00:00:00';
+        let mins = Math.floor(d / 60000);
+        let sek = Math.floor(d / 1000 - mins * 60);
+        let mils = Math.round((d / 1000 - mins * 60 - sek) * 1000)
+		clock.innerHTML = leadingZero(mins, 2) + ':' + leadingZero(sek, 2) + ':' + leadingZero(mils, 3);
+    }
+</script>
+</body>
+</html>
