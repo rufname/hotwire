@@ -6,8 +6,7 @@
     <title>Hot Wire</title>
 </head>
 <body>
-<button onclick="Puck.write('LED1.set();\n');">On!</button>
-<button onclick="Puck.write('LED1.reset();\n');">Off!</button>	
+<input type="button" id="connect" value="connect" onclick="connect()">
 <input type="button" id="start" value="start" onclick="start()">
 <input type="button" id="wire" value="wire" onclick="wire()">
 <input type="button" id="stop" value="stop" onclick="stop()">
@@ -15,6 +14,49 @@
 <div id="comment"></div>
 
 <script type="text/javascript">
+    let connection;
+
+	// Called when we get a line of data - updates the light color
+	function onLine(v) {
+		console.log("Received: "+JSON.stringify(v));
+	}
+
+    function connect() {
+		if (connection) {
+			connection.close();
+			connection = undefined;
+		}
+		Puck.connect(function(c) {
+			if (!c) {
+				alert("Couldn't connect!");
+				return;
+			}
+			connection = c;
+			// Handle the data we get back, and call 'onLine'
+			// whenever we get a line
+			let buf = "";
+			connection.on("data", function(d) {
+				buf += d;
+				let i = buf.indexOf("\n");
+				while (i>=0) {
+					onLine(buf.substr(0,i));
+					buf = buf.substr(i+1);
+					i = buf.indexOf("\n");
+				}
+			});
+			// First, reset Puck.js
+			connection.write("reset();\n", function() {
+				// Wait for it to reset itself
+				setTimeout(function() {
+					// Now tell it to write data on the current light level to Bluetooth
+					// 10 times a second. Also ensure that when disconnected, Puck.js
+					// resets so the setInterval doesn't keep draining battery.
+					connection.write("setInterval(function(){Bluetooth.println(Puck.light());},100);NRF.on('disconnect', function() {reset()});\n",
+						function() { console.log("Ready..."); });
+				}, 1500);
+			});
+		});
+	}
     let startTime, timer;
     let duration = 0;
 	let started = false;
