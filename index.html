@@ -52,8 +52,20 @@
 					// Now tell it to write data on the current light level to Bluetooth
 					// 10 times a second. Also ensure that when disconnected, Puck.js
 					// resets so the setInterval doesn't keep draining battery.
-					connection.write("setInterval(function(){Bluetooth.println(Puck.light());},100);NRF.on('disconnect', function() {reset()});\n",
-						function() { console.log("Ready..."); });
+
+                    // let code = "setInterval(function(){Bluetooth.println(Puck.light());},100);NRF.on('disconnect', function() {reset()});\n";
+                    let code = `pinMode(D28, 'input_pullup');
+						pinMode(D29, 'input_pullup');
+						setWatch(function(e) {
+						    LED1.set();
+						    console.log('D28 pressed');
+						}, D28, { repeat: true, edge: 'falling', debounce: 50 });
+						setWatch(function(e) {
+						    LED1.reset();
+						    console.log('D29 pressed');
+						}, D29, { repeat: true, edge: 'falling', debounce: 50 });
+						NRF.on('disconnect', function() {reset()});`;
+					connection.write(code, function() { console.log("Ready..."); });
 				}, 1500);
 			});
 		});
