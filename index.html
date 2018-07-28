@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">    
     <script src="https://www.puck-js.com/puck.js"></script>
-    <title>Hot Wire</title>
+    <title>Hot Wire v0.1.0</title>
 </head>
 <body>
 <input type="button" id="connect" value="connect" onclick="connect()">
@@ -15,17 +16,17 @@
 
 <script type="text/javascript">
     let connection;
-
-	// Called when we get a line of data - updates the light color
+	// Called when we get a line of data
 	function onLine(v) {
-		// console.log("Received: "+JSON.stringify(v));
 		console.log("Received: " + v);
 		comment.innerHTML = v;
 		if (v.indexOf('start') !== -1) {
 			start();
         } else if (v.indexOf('stop') !== -1) {
 			stop();
-        }
+		} else if (v.indexOf('wire') !== -1) {
+			wire();
+		}
 	}
 
     function connect() {
@@ -33,7 +34,7 @@
 			connection.close();
 			connection = undefined;
 		}
-		Puck.connect(function(c) {
+		Puck.connect(c => {
 			if (!c) {
 				alert("Couldn't connect!");
 				return;
@@ -55,13 +56,13 @@
 			connection.write("reset();\n", function() {
 				// Wait for it to reset itself
 				setTimeout(function() {
-					// Now tell it to write data on the current light level to Bluetooth
-					// 10 times a second. Also ensure that when disconnected, Puck.js
+					// Also ensure that when disconnected, Puck.js
 					// resets so the setInterval doesn't keep draining battery.
-
                     // let code = "setInterval(function(){Bluetooth.println(Puck.light());},100);NRF.on('disconnect', function() {reset()});\n";
-                    let code = `pinMode(D28, 'input_pullup');
+                    let code = `
+                        pinMode(D28, 'input_pullup');
 						pinMode(D29, 'input_pullup');
+						pinMode(D30, 'input_pullup');
 						setWatch(function(e) {
 						    LED1.set();
 						    Bluetooth.println('start');
@@ -69,11 +70,20 @@
 						}, D28, { repeat: true, edge: 'falling', debounce: 50 });
 						setWatch(function(e) {
 						    LED1.reset();
-						    Bluetooth.println('stop');						    
+						    LED2.reset();
+						    Bluetooth.println('stop');
 						    // console.log('D29 pressed');
 						}, D29, { repeat: true, edge: 'falling', debounce: 50 });
+						setWatch(function(e) {
+						    LED2.set();
+						    Bluetooth.println('wire');
+						    // console.log('D30 pressed');
+						}, D30, { repeat: true, edge: 'falling', debounce: 50 });
 						NRF.on('disconnect', function() {reset()});`;
-					connection.write(code, function() { console.log("Ready..."); });
+					connection.write(code, function() {
+						console.log('Ready...');
+						comment.innerHTML = 'Ready...';
+					});
 				}, 1500);
 			});
 		});
