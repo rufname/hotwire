@@ -2,9 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script src="https://www.puck-js.com/puck.js"></script>
     <title>Hot Wire</title>
 </head>
 <body>
+<button onclick="Puck.write('LED1.set();\n');">On!</button>
+<button onclick="Puck.write('LED1.reset();\n');">Off!</button>	
 <input type="button" id="start" value="start" onclick="start()">
 <input type="button" id="wire" value="wire" onclick="wire()">
 <input type="button" id="stop" value="stop" onclick="stop()">
