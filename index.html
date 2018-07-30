@@ -31,7 +31,7 @@
     </style>
 </head>
 <body>
-<h1>hOtWiRe 0.2.3</h1>
+<h1>hOtWiRe 0.2.4</h1>
 <div id="menu">
     <input class="button" type="button" id="connect" value="connect" onclick="connect()">
     <input class="button" type="button" id="start" value="start" onclick="start()">
@@ -108,17 +108,15 @@
 						    Bluetooth.println('stop');
 						    // console.log('D29 pressed');
 						}, D29, { repeat: true, edge: 'falling', debounce: 50 });
-						setWatch(function(e) {
-						    //{state:bool, time:float, lastTime:float}
-	                        Bluetooth.println(JSON.stringify(e));
-						    if (!e.state) {
-						        LED3.set();
-						        Bluetooth.println('wireStart');
-					        } else {
-						        LED3.reset();
-						        Bluetooth.println('wireStop');
-					        }
-						}, D30, { repeat: true, edge: 'both' });
+                        setWatch(function(e) {
+                          if (!e.state) {
+                            LED3.set();
+                            Bluetooth.println('wireStart');
+                          } else {
+                            LED3.reset();
+                            Bluetooth.println('wireStop');
+                          }
+                        }, D30, { repeat: true, edge: 'both', debounce: '20' });
 						NRF.on('disconnect', function() {reset()});`;
 					connection.write(code, function() {
 						console.log('Ready...');
