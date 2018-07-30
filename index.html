@@ -109,15 +109,15 @@
 						    // console.log('D29 pressed');
 						}, D29, { repeat: true, edge: 'falling', debounce: 50 });
 						setWatch(function(e) {
-						    LED3.set();
-						    Bluetooth.println('wireStart');
-						    // console.log('D30 pressed');
-						}, D30, { repeat: true, edge: 'falling' });
-						setWatch(function(e) {
-						    LED3.reset();
-						    Bluetooth.println('wireStop');
-						    // console.log('D30 pressed');
-						}, D30, { repeat: true, edge: 'rising' });
+						    //{state:bool, time:float, lastTime:float}
+						    if (e.state) {
+						        LED3.set();
+						        Bluetooth.println('wireStart');
+					        } else {
+						        LED3.reset();
+						        Bluetooth.println('wireStop');
+					        }
+						}, D30, { repeat: true, edge: 'both' });
 						NRF.on('disconnect', function() {reset()});`;
 					connection.write(code, function() {
 						console.log('Ready...');
@@ -136,7 +136,7 @@
     let debug = document.getElementById('debug');
 	setClock(duration);
 	setWireClock(wireTime);
-	
+
     function start () {
 		console.log("start");
 		debug.innerHTML = "start";
